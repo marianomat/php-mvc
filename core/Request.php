@@ -25,10 +25,46 @@ class Request
         }
     }
 
-    public function getMethod()
+    public function method()
     {
         // De $_SERVER obtenemos el metodo de REQUEST_METHOD
         // Lo retornamos en lowercase
         return strtolower($_SERVER["REQUEST_METHOD"]);
+    }
+
+    public function isGet()
+    {
+        // Si es get devuevle true y sino false
+        return $this->method() === "get";
+    }
+
+    public function isPost()
+    {
+        // Si es post devuelve true y sino false
+        return $this->method() === "post";
+    }
+
+    public function getBody()
+    {
+        // Accede a los datos del body de un request POST
+        // Se puede acceder desde $_POST, pero puede contener caracteres maliciosos, hay que sanitizarla
+        $body = [];
+
+        // Dentro de $_GET estan los valores que envian
+        // Por cada valor del GET hay que sanitizarlo
+        if ($this->method() === "get") {
+            foreach ($_GET as $key => $value) {
+                // Filter_input  toma la variable $key, remueve los caracteres invalidos y lo devuelve dentro de body[$key]
+                $body[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            }
+        }
+        // Similar al GET
+        if ($this->method() === "post") {
+            foreach ($_POST as $key => $value) {
+                // Filter_input  toma la variable $key, remueve los caracteres invalidos y lo devuelve dentro de body[$key]
+                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            }
+        }
+        return $body;
     }
 }
