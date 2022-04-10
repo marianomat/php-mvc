@@ -91,6 +91,7 @@ class Router
         // Luego el contenido de la vista
         $viewContent = $this->renderOnlyView($view, $params);
 
+
         // Cuando tenemos ambos, reempleazamos el {{content}} de layout con el contenido de la vista y lo retornamos
         return str_replace("{{content}}", $viewContent, $layoutContent);
     }

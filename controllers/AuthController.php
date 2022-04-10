@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\core\Controller;
 use app\core\Request;
+use app\models\RegisterModel;
 
 class AuthController extends Controller
 {
@@ -18,9 +19,29 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Instanciamos un objeto modelo de registro
+        $registerModel = new RegisterModel();
+
         if ($request->isPost()) {
-            return "Handle data";
+            // Le pasamos los datos al modelo
+            $registerModel->loadData($request->getBody());
+
+
+
+            // Si los datos fueron validados (primera condicion)
+            // Se registra el modelo (segundo condicion)
+            if ($registerModel->validate() && $registerModel->register()) {
+                return "Success";
+            }
+
+            // Si no cumple alguna condicion vuelve a cargar la vista de registro y se le passan los errores al usuario
+            return $this->render("register", [
+                "model" => $registerModel
+            ]);
         }
-        return $this->render("register");
+        $this->setLayout("auth");
+        return $this->render("register", [
+            "model" => $registerModel
+        ]);
     }
 }
